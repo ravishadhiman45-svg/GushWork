@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Professional Solutions - Modern Website</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <!-- Sticky header that appears on scroll -->
+    <header class="sticky-header" id="stickyHeader">
+      <nav class="sticky-nav-container">
+        <div class="sticky-logo">Solutions</div>
+        <ul class="sticky-nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- Main navigation header -->
+    <header class="main-header" id="mainHeader">
+      <nav class="navbar-container">
+        <div class="logo">Solutions</div>
+        <ul class="nav-links">
+          <li><a href="#features">Features</a></li>
+          <li><a href="#products">Products</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+        <button
+          class="mobile-menu-toggle"
+          id="mobileMenuToggle"
+          aria-label="Toggle mobile menu"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </nav>
+    </header>
+
+    <main>
+      <!-- PAGE 1: Hero Section -->
+      <section class="hero-section" id="page1">
+        <div class="hero-content">
+          <div class="hero-text">
+            <h1 class="hero-title">Innovative Solutions for Modern Business</h1>
+            <p class="hero-subtitle">
+              Transform your business with cutting-edge technology and expert
+              solutions designed for growth.
+            </p>
+            <div class="hero-buttons">
+              <button class="btn btn-primary">Get Started</button>
+              <button class="btn btn-secondary">Learn More</button>
+            </div>
+          </div>
+          <div class="hero-image">
+            <img
+              src="assets/images/main.png"
+              alt="Professional workspace with modern technology"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 2: Features Section -->
+      <section class="features-section" id="page2">
+        <div class="section-container">
+          <h2 class="section-title">Why Choose Us</h2>
+          <p class="section-subtitle">
+            Industry-leading features that set us apart
+          </p>
+          <div class="features-grid">
+            <div class="feature-card">
+              <div class="feature-icon">
+                <img src="assets/icons/bag.png" alt="Fast Performance icon" />
+              </div>
+              <h3>Fast Performance</h3>
+              <p>Lightning-fast speeds optimized for optimal user experience</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <img src="assets/icons/Vector.png" alt="Security icon" />
+              </div>
+              <h3>Enterprise Security</h3>
+              <p>Bank-grade encryption to keep your data safe and secure</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <img src="assets/icons/quote.png" alt="Support icon" />
+              </div>
+              <h3>24/7 Support</h3>
+              <p>Dedicated support team available round the clock</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">
+                <img src="assets/icons/cube.png" alt="Scalability icon" />
+              </div>
+              <h3>Scalable Infrastructure</h3>
+              <p>Grows with your business needs without limitations</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 3: Product Showcase with Carousel -->
+      <section class="carousel-section" id="page3">
+        <div class="section-container">
+          <h2 class="section-title">Featured Products</h2>
+          <p class="section-subtitle">Explore our premium product lineup</p>
+          <div class="carousel-wrapper">
+            <div class="carousel-container">
+              <div class="carousel-inner" id="carouselInner">
+                <div class="carousel-item">
+                  <img src="assets/images/main.png" alt="Premium Product 1" />
+                </div>
+                <div class="carousel-item">
+                  <img
+                    src="assets/images/euroflex.png"
+                    alt="Premium Product 2"
+                  />
+                </div>
+                <div class="carousel-item">
+                  <img src="assets/images/main.png" alt="Premium Product 3" />
+                </div>
+                <div class="carousel-item">
+                  <img
+                    src="assets/images/euroflex.png"
+                    alt="Premium Product 4"
+                  />
+                </div>
+              </div>
+            </div>
+            <button
+              class="carousel-control carousel-prev"
+              id="carouselPrev"
+              aria-label="Previous product"
+            >
+              <span>&#10094;</span>
+            </button>
+            <button
+              class="carousel-control carousel-next"
+              id="carouselNext"
+              aria-label="Next product"
+            >
+              <span>&#10095;</span>
+            </button>
+          </div>
+          <div class="carousel-indicators" id="carouselIndicators"></div>
+        </div>
+      </section>
+
+      <!-- PAGE 4: About Section -->
+      <section class="about-section" id="page4">
+        <div class="section-container">
+          <div class="about-content">
+            <div class="about-text">
+              <h2>About Our Company</h2>
+              <p>
+                Founded in 2015, we've been at the forefront of digital
+                transformation. Our mission is to empower businesses with
+                innovative solutions that drive real results.
+              </p>
+              <p>
+                With over 500 successful projects and 1000+ satisfied clients
+                worldwide, we've built a reputation for excellence and
+                reliability.
+              </p>
+              <ul class="about-features">
+                <li>✓ 10+ Years Industry Experience</li>
+                <li>✓ Award-Winning Solutions</li>
+                <li>✓ Global Client Base</li>
+                <li>✓ Certified Professionals</li>
+              </ul>
+            </div>
+            <div class="about-image">
+              <img
+                src="assets/images/euroflex.png"
+                alt="Company team working together"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 5: Statistics Section -->
+      <section class="stats-section" id="page5">
+        <div class="section-container">
+          <h2 class="section-title">Our Impact</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <h3 class="stat-number">1000+</h3>
+              <p class="stat-label">Happy Clients</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="stat-number">500+</h3>
+              <p class="stat-label">Projects Completed</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="stat-number">98%</h3>
+              <p class="stat-label">Client Satisfaction</p>
+            </div>
+            <div class="stat-card">
+              <h3 class="stat-number">24/7</h3>
+              <p class="stat-label">Support Available</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 6: Products Section -->
+      <section class="products-section" id="page6">
+        <div class="section-container">
+          <h2 class="section-title">Our Products</h2>
+          <p class="section-subtitle">
+            Comprehensive solutions for every business need
+          </p>
+          <div class="products-grid">
+            <article class="product-card">
+              <div class="product-image">
+                <img
+                  src="assets/images/main.png"
+                  alt="Enterprise Suite Product"
+                />
+              </div>
+              <div class="product-info">
+                <h3>Enterprise Suite</h3>
+                <p>
+                  Complete business management solution with integrated tools
+                  for maximum efficiency.
+                </p>
+                <span class="price">$99/month</span>
+                <button class="btn btn-primary">View Details</button>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-image">
+                <img
+                  src="assets/images/euroflex.png"
+                  alt="Analytics Pro Product"
+                />
+              </div>
+              <div class="product-info">
+                <h3>Analytics Pro</h3>
+                <p>
+                  Advanced analytics platform with real-time insights and
+                  predictive intelligence.
+                </p>
+                <span class="price">$149/month</span>
+                <button class="btn btn-primary">View Details</button>
+              </div>
+            </article>
+            <article class="product-card">
+              <div class="product-image">
+                <img src="assets/images/main.png" alt="Cloud Manager Product" />
+              </div>
+              <div class="product-info">
+                <h3>Cloud Manager</h3>
+                <p>
+                  Seamless cloud management with enterprise-grade security and
+                  reliability.
+                </p>
+                <span class="price">$199/month</span>
+                <button class="btn btn-primary">View Details</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 7: Testimonials Section -->
+      <section class="testimonials-section" id="page7">
+        <div class="section-container">
+          <h2 class="section-title">What Our Clients Say</h2>
+          <p class="section-subtitle">Real feedback from satisfied customers</p>
+          <div class="testimonials-grid">
+            <article class="testimonial-card">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "This solution transformed our business operations. The
+                  support team is incredibly responsive and knowledgeable."
+                </p>
+                <div class="testimonial-author">
+                  <strong>Sarah Johnson</strong>
+                  <span>CEO, Tech Innovations Inc.</span>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "We've saved thousands in operational costs. The ROI was
+                  evident within the first three months of implementation."
+                </p>
+                <div class="testimonial-author">
+                  <strong>Michael Chen</strong>
+                  <span>Operations Director, Global Solutions</span>
+                </div>
+              </div>
+            </article>
+            <article class="testimonial-card">
+              <div class="testimonial-content">
+                <p class="testimonial-text">
+                  "Professional, reliable, and innovative. The team went above
+                  and beyond to ensure our success."
+                </p>
+                <div class="testimonial-author">
+                  <strong>Emma Rodriguez</strong>
+                  <span>Founder, Creative Agency Plus</span>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 8: Technical Features -->
+      <section class="technical-features-section" id="page8">
+        <div class="section-container">
+          <h2 class="section-title">Technical Excellence</h2>
+          <p class="section-subtitle">Built on modern, scalable technology</p>
+          <div class="tech-features-grid">
+            <div class="tech-feature-item">
+              <img src="assets/icons/Vector.png" alt="API Integration icon" />
+              <h3>RESTful API</h3>
+              <p>
+                Powerful API for seamless integration with third-party services
+              </p>
+            </div>
+            <div class="tech-feature-item">
+              <img src="assets/icons/cube.png" alt="Database icon" />
+              <h3>Advanced Database</h3>
+              <p>
+                Optimized database architecture for lightning-fast data
+                retrieval
+              </p>
+            </div>
+            <div class="tech-feature-item">
+              <img src="assets/icons/Vector.png" alt="Cloud icon" />
+              <h3>Cloud Native</h3>
+              <p>Built for the cloud with auto-scaling and high availability</p>
+            </div>
+            <div class="tech-feature-item">
+              <img src="assets/icons/needle.png" alt="Analytics icon" />
+              <h3>Real-Time Analytics</h3>
+              <p>Live dashboards and detailed reporting capabilities</p>
+            </div>
+            <div class="tech-feature-item">
+              <img src="assets/icons/bag.png" alt="Security icon" />
+              <h3>Enterprise Security</h3>
+              <p>
+                Multi-layer security with encryption and compliance standards
+              </p>
+            </div>
+            <div class="tech-feature-item">
+              <img src="assets/icons/quote.png" alt="Support icon" />
+              <h3>Developer Support</h3>
+              <p>Comprehensive documentation and dedicated technical support</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 9: Call to Action Section -->
+      <section class="cta-section" id="page9">
+        <div class="section-container">
+          <div class="cta-content">
+            <h2>Ready to Transform Your Business?</h2>
+            <p>
+              Join thousands of companies already using our solutions to drive
+              growth and innovation.
+            </p>
+            <div class="cta-buttons">
+              <button class="btn btn-primary btn-large" id="dataSheetBtn">
+                Download Full Technical Datasheet
+              </button>
+              <button class="btn btn-secondary btn-large" id="callbackBtn">
+                Request a Quote
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE 10: Contact Section -->
+      <section class="contact-section" id="page10">
+        <div class="section-container">
+          <h2 class="section-title">Get in Touch</h2>
+          <p class="section-subtitle">
+            We'd love to hear from you. Let's discuss how we can help.
+          </p>
+          <div class="contact-wrapper">
+            <div class="contact-info">
+              <div class="contact-item">
+                <h3>Address</h3>
+                <p>
+                  123 Business Avenue<br />New York, NY 10001<br />United States
+                </p>
+              </div>
+              <div class="contact-item">
+                <h3>Email</h3>
+                <p>
+                  <a href="mailto:info@solutions.com">info@solutions.com</a>
+                </p>
+              </div>
+              <div class="contact-item">
+                <h3>Phone</h3>
+                <p><a href="tel:+1234567890">+1 (234) 567-890</a></p>
+              </div>
+            </div>
+            <form class="contact-form" id="contactForm">
+              <input
+                type="text"
+                placeholder="Your Name"
+                required
+                aria-label="Your name"
+              />
+              <input
+                type="email"
+                placeholder="Your Email"
+                required
+                aria-label="Your email"
+              />
+              <textarea
+                placeholder="Your Message"
+                rows="5"
+                required
+                aria-label="Your message"
+              ></textarea>
+              <button type="submit" class="btn btn-primary">
+                Send Message
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Solutions</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#products">Products</a></li>
+            <li><a href="#pricing">Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#blog">Blog</a></li>
+            <li><a href="#careers">Careers</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#privacy">Privacy Policy</a></li>
+            <li><a href="#terms">Terms of Service</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4>Follow Us</h4>
+          <ul class="social-links">
+            <li><a href="#facebook">Facebook</a></li>
+            <li><a href="#twitter">Twitter</a></li>
+            <li><a href="#linkedin">LinkedIn</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Solutions. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Email Datasheet Modal -->
+    <div class="modal" id="emailModal">
+      <div class="modal-overlay" id="emailModalOverlay"></div>
+      <div class="modal-content">
+        <button
+          class="modal-close"
+          id="emailModalClose"
+          aria-label="Close modal"
+        >
+          ×
+        </button>
+        <div class="modal-header">
+          <h2>Download Technical Datasheet</h2>
+        </div>
+        <div class="modal-body">
+          <p>
+            Get instant access to our comprehensive technical datasheet with
+            detailed specifications and implementation guidelines.
+          </p>
+          <form class="datasheet-form" id="datasheetForm">
+            <div class="form-group">
+              <input
+                type="text"
+                placeholder="Full Name"
+                required
+                aria-label="Full Name"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="email"
+                placeholder="Email Address"
+                required
+                aria-label="Email Address"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="text"
+                placeholder="Company Name"
+                required
+                aria-label="Company Name"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                aria-label="Phone Number"
+              />
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Download Datasheet
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- Request Callback Modal -->
+    <div class="modal" id="callbackModal">
+      <div class="modal-overlay" id="callbackModalOverlay"></div>
+      <div class="modal-content">
+        <button
+          class="modal-close"
+          id="callbackModalClose"
+          aria-label="Close modal"
+        >
+          ×
+        </button>
+        <div class="modal-header">
+          <h2>Request a Quote</h2>
+        </div>
+        <div class="modal-body">
+          <p>
+            Let us know your requirements and our expert team will prepare a
+            customized quote for your business.
+          </p>
+          <form class="callback-form" id="callbackForm">
+            <div class="form-group">
+              <input
+                type="text"
+                placeholder="Your Name"
+                required
+                aria-label="Your Name"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="email"
+                placeholder="Email Address"
+                required
+                aria-label="Email Address"
+              />
+            </div>
+            <div class="form-group">
+              <input
+                type="tel"
+                placeholder="Phone Number"
+                required
+                aria-label="Phone Number"
+              />
+            </div>
+            <div class="form-group">
+              <select required aria-label="Company Size">
+                <option value="">Select Company Size</option>
+                <option value="startup">Startup (1-50)</option>
+                <option value="small">Small (50-250)</option>
+                <option value="medium">Medium (250-1000)</option>
+                <option value="enterprise">Enterprise (1000+)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <textarea
+                placeholder="Tell us about your project"
+                rows="4"
+                required
+                aria-label="Project Details"
+              ></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">
+              Submit Quote Request
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
