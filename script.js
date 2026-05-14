@@ -1,502 +1,504 @@
-/* ========================================
-   STICKY HEADER FUNCTIONALITY
-   ======================================== */
+/**
+ * Mangalam / Meera — vanilla JS modules
+ * - Sticky header (post first fold, hide on scroll up)
+ * - Carousels + horizontal scroll regions
+ * - Modals (backdrop / Esc / close)
+ * - FAQ accordion + light form handling
+ */
 
-// Initialize sticky header state
-let stickyHeaderVisible = false;
-const stickyHeader = document.getElementById('stickyHeader');
-const mainHeader = document.getElementById('mainHeader');
+const qs = (sel, root = document) => root.querySelector(sel);
+const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-// Sticky header appears when user scrolls beyond the first section (hero)
-// This creates a professional effect where additional navigation becomes available
-window.addEventListener('scroll', () => {
-    const scrollPosition = window.scrollY;
-    const heroSection = document.querySelector('.hero-section');
-    const heroHeight = heroSection ? heroSection.offsetHeight : 0;
+/* -----------------------------------------------------------------------------
+   Utilities
+   ----------------------------------------------------------------------------- */
 
-    // Show sticky header after scrolling past the hero section
-    if (scrollPosition > heroHeight - 100) {
-        if (!stickyHeaderVisible) {
-            stickyHeader.classList.add('visible');
-            stickyHeaderVisible = true;
-        }
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function prefersReducedMotion() {
+  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function debounce(fn, ms) {
+  let t = null;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+/* -----------------------------------------------------------------------------
+   Sticky header
+   ----------------------------------------------------------------------------- */
+
+function initStickyHeader() {
+  const sticky = qs("#stickyHeader");
+  const page1 = qs("#page1");
+  if (!sticky || !page1) return;
+
+  let lastY = window.scrollY || 0;
+  let foldY = 0;
+
+  const measure = () => {
+    const rect = page1.getBoundingClientRect();
+    const top = rect.top + window.scrollY;
+    foldY = top + rect.height * 0.62;
+  };
+
+  const apply = () => {
+    const y = window.scrollY || 0;
+
+    if (y < 8) {
+      sticky.classList.remove("is-active");
+      sticky.setAttribute("aria-hidden", "true");
+      lastY = y;
+      return;
+    }
+
+    if (y <= foldY) {
+      sticky.classList.remove("is-active");
+      sticky.setAttribute("aria-hidden", "true");
+    } else if (y > lastY) {
+      sticky.classList.add("is-active");
+      sticky.setAttribute("aria-hidden", "false");
     } else {
-        if (stickyHeaderVisible) {
-            stickyHeader.classList.remove('visible');
-            stickyHeaderVisible = false;
-        }
+      sticky.classList.remove("is-active");
+      sticky.setAttribute("aria-hidden", "true");
     }
-});
 
-/* ========================================
-   CAROUSEL FUNCTIONALITY
-   ======================================== */
+    lastY = y;
+  };
 
-// Carousel state management - tracks which slide is currently displayed
-let currentSlide = 0;
-let totalSlides = 4; // Number of carousel items
-
-const carouselInner = document.getElementById('carouselInner');
-const carouselPrev = document.getElementById('carouselPrev');
-const carouselNext = document.getElementById('carouselNext');
-const carouselIndicators = document.getElementById('carouselIndicators');
-
-// Create carousel indicator dots dynamically based on number of slides
-function initializeCarouselIndicators() {
-    const indicators = document.querySelectorAll('.carousel-item').length;
-    totalSlides = indicators;
-
-    for (let i = 0; i < indicators; i++) {
-        const dot = document.createElement('button');
-        dot.className = `carousel-indicator ${i === 0 ? 'active' : ''}`;
-        dot.setAttribute('aria-label', `Go to slide ${i + 1}`);
-        dot.addEventListener('click', () => goToSlide(i));
-        carouselIndicators.appendChild(dot);
+  const onScroll = () => {
+    if (prefersReducedMotion()) {
+      measure();
+      const y = window.scrollY || 0;
+      sticky.classList.toggle("is-active", y > foldY);
+      sticky.setAttribute("aria-hidden", y > foldY ? "false" : "true");
+      return;
     }
+    apply();
+  };
+
+  measure();
+  onScroll();
+
+  window.addEventListener("resize", debounce(measure, 150));
+  window.addEventListener("scroll", onScroll, { passive: true });
 }
 
-// Update carousel position when slide changes
-// This function smoothly translates the carousel to show the correct slide
-function updateCarouselPosition() {
-    const translateX = -currentSlide * 100;
-    carouselInner.style.transform = `translateX(${translateX}%)`;
+/* -----------------------------------------------------------------------------
+   Mobile navigation (main + sticky lists)
+   ----------------------------------------------------------------------------- */
 
-    // Update indicator dots to show which slide is active
-    document.querySelectorAll('.carousel-indicator').forEach((dot, index) => {
-        dot.classList.toggle('active', index === currentSlide);
+function initMobileNav() {
+  const mainToggle = qs("#mainNavToggle");
+  const stickyToggle = qs("#stickyNavToggle");
+  const mainList = qs("#mainNavList");
+  const stickyList = qs("#stickyNavList");
+
+  const lists = [mainList, stickyList].filter(Boolean);
+
+  const setOpen = (open) => {
+    lists.forEach((ul) => ul && ul.classList.toggle("is-open", open));
+    [mainToggle, stickyToggle].forEach((btn) => {
+      if (!btn) return;
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     });
-}
+  };
 
-// Navigate to a specific slide when dot is clicked
-function goToSlide(slideIndex) {
-    currentSlide = slideIndex;
-    updateCarouselPosition();
-}
-
-// Move to next slide when next button is clicked
-carouselNext.addEventListener('click', () => {
-    currentSlide = (currentSlide + 1) % totalSlides;
-    updateCarouselPosition();
-});
-
-// Move to previous slide when prev button is clicked
-carouselPrev.addEventListener('click', () => {
-    currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
-    updateCarouselPosition();
-});
-
-// Keyboard navigation for accessibility - arrow keys control carousel
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowRight') {
-        carouselNext.click();
-    } else if (e.key === 'ArrowLeft') {
-        carouselPrev.click();
-    }
-});
-
-// Initialize carousel when page loads
-document.addEventListener('DOMContentLoaded', initializeCarouselIndicators);
-
-/* ========================================
-   MODAL POPUP FUNCTIONALITY
-   ======================================== */
-
-// Email Datasheet Modal - appears when "Download Full Technical Datasheet" is clicked
-const emailModal = document.getElementById('emailModal');
-const emailModalOverlay = document.getElementById('emailModalOverlay');
-const emailModalClose = document.getElementById('emailModalClose');
-const dataSheetBtn = document.getElementById('dataSheetBtn');
-const datasheetForm = document.getElementById('datasheetForm');
-
-// Request Callback Modal - appears when "Request a Quote" is clicked
-const callbackModal = document.getElementById('callbackModal');
-const callbackModalOverlay = document.getElementById('callbackModalOverlay');
-const callbackModalClose = document.getElementById('callbackModalClose');
-const callbackBtn = document.getElementById('callbackBtn');
-const callbackForm = document.getElementById('callbackForm');
-
-// Open email datasheet modal with smooth animation
-function openEmailModal() {
-    emailModal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Prevent scrolling when modal is open
-}
-
-// Close email datasheet modal with smooth animation
-function closeEmailModal() {
-    emailModal.classList.remove('active');
-    document.body.style.overflow = 'auto'; // Restore scrolling
-}
-
-// Open request callback modal with smooth animation
-function openCallbackModal() {
-    callbackModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-}
-
-// Close request callback modal with smooth animation
-function closeCallbackModal() {
-    callbackModal.classList.remove('active');
-    document.body.style.overflow = 'auto';
-}
-
-// Email modal event listeners
-dataSheetBtn.addEventListener('click', openEmailModal);
-emailModalClose.addEventListener('click', closeEmailModal);
-emailModalOverlay.addEventListener('click', closeEmailModal);
-
-// Callback modal event listeners
-callbackBtn.addEventListener('click', openCallbackModal);
-callbackModalClose.addEventListener('click', closeCallbackModal);
-callbackModalOverlay.addEventListener('click', closeCallbackModal);
-
-// Close modals when ESC key is pressed - standard web behavior for accessibility
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeEmailModal();
-        closeCallbackModal();
-    }
-});
-
-// Prevent modal from closing when clicking inside the modal content
-emailModal.addEventListener('click', (e) => {
-    if (e.target === emailModal || e.target === emailModalOverlay) {
-        closeEmailModal();
-    }
-});
-
-callbackModal.addEventListener('click', (e) => {
-    if (e.target === callbackModal || e.target === callbackModalOverlay) {
-        closeCallbackModal();
-    }
-});
-
-/* ========================================
-   FORM HANDLING
-   ======================================== */
-
-// Datasheet form submission
-datasheetForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // Get form data
-    const formData = new FormData(datasheetForm);
-    const data = Object.fromEntries(formData);
-
-    // In production, this would send to a backend API
-    // For now, we simulate successful submission
-    console.log('Datasheet form submitted:', data);
-
-    // Show success message (you can enhance this with a toast notification)
-    alert('Thank you! Your datasheet download will start shortly. Check your email for the download link.');
-
-    // Reset form and close modal
-    datasheetForm.reset();
-    closeEmailModal();
-});
-
-// Callback form submission
-callbackForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // Get form data
-    const formData = new FormData(callbackForm);
-    const data = Object.fromEntries(formData);
-
-    // In production, this would send to a backend API
-    console.log('Callback form submitted:', data);
-
-    // Show success message
-    alert('Thank you for your interest! Our team will contact you shortly with a personalized quote.');
-
-    // Reset form and close modal
-    callbackForm.reset();
-    closeCallbackModal();
-});
-
-// Contact form submission (at the bottom of the page)
-const contactForm = document.getElementById('contactForm');
-
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // Get form data
-    const formData = new FormData(contactForm);
-    const data = Object.fromEntries(formData);
-
-    // In production, this would send to a backend API
-    console.log('Contact form submitted:', data);
-
-    // Show success message
-    alert('Thank you for your message! We will get back to you within 24 hours.');
-
-    // Reset form
-    contactForm.reset();
-});
-
-/* ========================================
-   MOBILE NAVIGATION
-   ======================================== */
-
-// Mobile menu toggle - shows/hides navigation on mobile devices
-const mobileMenuToggle = document.getElementById('mobileMenuToggle');
-const navLinks = document.querySelector('.nav-links');
-
-mobileMenuToggle.addEventListener('click', () => {
-    // Toggle the menu visibility
-    navLinks.classList.toggle('mobile-open');
-    mobileMenuToggle.classList.toggle('active');
-});
-
-// Close mobile menu when a link is clicked
-document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => {
-        navLinks.classList.remove('mobile-open');
-        mobileMenuToggle.classList.remove('active');
+  const wireToggle = (btn) => {
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const open = !lists.some((ul) => ul.classList.contains("is-open"));
+      setOpen(open);
     });
-});
+  };
 
-// Close mobile menu when scrolling
-window.addEventListener('scroll', () => {
-    if (navLinks.classList.contains('mobile-open')) {
-        navLinks.classList.remove('mobile-open');
-        mobileMenuToggle.classList.remove('active');
-    }
-});
+  wireToggle(mainToggle);
+  wireToggle(stickyToggle);
 
-/* ========================================
-   SMOOTH SCROLL FOR ANCHOR LINKS
-   ======================================== */
+  qsa('a[href^="#"]').forEach((a) => {
+    a.addEventListener("click", () => setOpen(false));
+  });
 
-// Smooth scrolling when clicking navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
+  window.addEventListener(
+    "resize",
+    debounce(() => {
+      if (window.innerWidth > 800) setOpen(false);
+    }, 150)
+  );
+}
 
-        // Don't prevent default for modal triggers
-        if (href === '#') {
-            return;
-        }
+/* -----------------------------------------------------------------------------
+   Hero carousel + thumbnails
+   ----------------------------------------------------------------------------- */
 
-        const target = document.querySelector(href);
+function initHeroCarousel() {
+  const track = qs("#heroTrack");
+  const prev = qs("#heroPrev");
+  const next = qs("#heroNext");
+  const thumbsRoot = qs("#heroThumbs");
+  if (!track || !thumbsRoot) return;
 
-        if (target) {
-            e.preventDefault();
+  const slides = qsa(".hero-gallery__slide", track);
+  let index = 0;
+  const THUMB_SLOTS = 6;
 
-            // Calculate offset for fixed header
-            const headerHeight = mainHeader.offsetHeight;
-            const targetPosition = target.offsetTop - headerHeight;
-
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
-            });
-        }
+  const render = () => {
+    track.style.transform = `translateX(${-index * 100}%)`;
+    qsa(".hero-thumb", thumbsRoot).forEach((t) => {
+      const si = t.dataset.slideIndex;
+      if (si === undefined) {
+        t.setAttribute("aria-selected", "false");
+      } else {
+        t.setAttribute("aria-selected", Number(si) === index ? "true" : "false");
+      }
     });
-});
+  };
 
-/* ========================================
-   LAZY LOADING FOR IMAGES
-   ======================================== */
+  const goTo = (i) => {
+    index = clamp(i, 0, slides.length - 1);
+    render();
+  };
 
-// Implement native lazy loading for images
-document.querySelectorAll('img').forEach(img => {
-    if (!img.hasAttribute('loading')) {
-        img.setAttribute('loading', 'lazy');
-    }
-});
+  slides.forEach((_, i) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "hero-thumb";
+    btn.dataset.slideIndex = String(i);
+    btn.setAttribute("role", "tab");
+    btn.setAttribute("aria-selected", i === 0 ? "true" : "false");
+    btn.setAttribute("aria-label", `Show slide ${i + 1}`);
+    const img = slides[i].querySelector("img");
+    if (img) btn.appendChild(img.cloneNode(true));
+    btn.addEventListener("click", () => goTo(i));
+    thumbsRoot.appendChild(btn);
+  });
 
-// Intersection Observer for images that need to be loaded only when visible
-if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const img = entry.target;
-                if (img.dataset.src) {
-                    img.src = img.dataset.src;
-                    img.removeAttribute('data-src');
-                    observer.unobserve(img);
-                }
-            }
-        });
+  for (let i = slides.length; i < THUMB_SLOTS; i++) {
+    const ph = document.createElement("span");
+    ph.className = "hero-thumb hero-thumb--empty";
+    ph.setAttribute("aria-hidden", "true");
+    thumbsRoot.appendChild(ph);
+  }
+
+  prev?.addEventListener("click", () => goTo(index - 1));
+  next?.addEventListener("click", () => goTo(index + 1));
+
+  render();
+}
+
+/* -----------------------------------------------------------------------------
+   Horizontal scroll regions (applications + testimonials)
+   ----------------------------------------------------------------------------- */
+
+function initHScroll(root, prevBtn, nextBtn, amountRatio = 0.86) {
+  if (!root) return;
+
+  const step = () => Math.max(240, Math.floor(root.clientWidth * amountRatio));
+
+  prevBtn?.addEventListener("click", () => {
+    root.scrollBy({ left: -step(), behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  });
+
+  nextBtn?.addEventListener("click", () => {
+    root.scrollBy({ left: step(), behavior: prefersReducedMotion() ? "auto" : "smooth" });
+  });
+}
+
+/* -----------------------------------------------------------------------------
+   Manufacturing tabs + mini carousel
+   ----------------------------------------------------------------------------- */
+
+const PROCESS_STEPS = [
+  {
+    key: "raw",
+    label: "Raw Material",
+    title: "High-Grade Raw Material Selection",
+    body: "Vacuum sizing tanks ensure precise outer diameter while internal pressure maintains perfect roundness and wall thickness uniformity.",
+    bullets: ["PE100 grade material", "Optimal molecular weight distribution"],
+  },
+  {
+    key: "extrusion",
+    label: "Extrusion",
+    title: "Controlled Extrusion Parameters",
+    body: "Temperature, pressure, and screw speed are continuously monitored to maintain melt homogeneity and consistent output rates.",
+    bullets: ["Closed-loop monitoring", "Automated profile adjustments"],
+  },
+  {
+    key: "cooling",
+    label: "Cooling",
+    title: "Gradual Cooling for Dimensional Stability",
+    body: "Controlled cooling prevents warping and residual stresses while preserving long-term mechanical properties.",
+    bullets: ["Calibrated spray zones", "Stable shrink compensation"],
+  },
+  {
+    key: "sizing",
+    label: "Sizing",
+    title: "Precision Sizing & Calibration",
+    body: "Sizing tooling and vacuum calibration keep OD/ID within tight tolerances across long production runs.",
+    bullets: ["Laser OD checks", "Wall thickness sampling"],
+  },
+  {
+    key: "qc",
+    label: "Quality Control",
+    title: "In-Line Quality Assurance",
+    body: "Batch traceability, mechanical tests, and visual inspection checkpoints ensure every coil meets specification.",
+    bullets: ["Traceability IDs", "Destructive & non-destructive tests"],
+  },
+  {
+    key: "marking",
+    label: "Marking",
+    title: "Durable Marking & Coding",
+    body: "Laser or inkjet marking applies standards-compliant identification for installation and audit trails.",
+    bullets: ["Standard-compliant text", "Batch and date codes"],
+  },
+  {
+    key: "cutting",
+    label: "Cutting",
+    title: "Accurate Cutting to Length",
+    body: "Automated cutting stations deliver repeatable lengths for coils and straight sticks with clean edges.",
+    bullets: ["Servo-controlled cutters", "Length verification"],
+  },
+  {
+    key: "packaging",
+    label: "Packaging",
+    title: "Protective Packaging for Transit",
+    body: "Finished goods are wrapped and palletized to prevent UV exposure and mechanical damage during logistics.",
+    bullets: ["UV protective wrap", "Export-ready pallets"],
+  },
+];
+
+function initProcess() {
+  const tabsRoot = qs("#processTabs");
+  const copyRoot = qs("#processCopy");
+  const track = qs("#processTrack");
+  const prev = qs("#processPrev");
+  const next = qs("#processNext");
+  if (!tabsRoot || !copyRoot || !track) return;
+
+  let active = 0;
+
+  const renderCopy = () => {
+    const step = PROCESS_STEPS[active];
+    copyRoot.textContent = "";
+
+    const h = document.createElement("h3");
+    h.textContent = step.title;
+    const p = document.createElement("p");
+    p.textContent = step.body;
+
+    const ul = document.createElement("ul");
+    ul.className = "checklist";
+    step.bullets.forEach((txt) => {
+      const li = document.createElement("li");
+      const icon = document.createElement("span");
+      icon.className = "check-ico";
+      icon.textContent = "✓";
+      const span = document.createElement("span");
+      span.textContent = txt;
+      li.appendChild(icon);
+      li.appendChild(span);
+      ul.appendChild(li);
     });
 
-    // Observe all images with data-src attribute
-    document.querySelectorAll('img[data-src]').forEach(img => {
-        imageObserver.observe(img);
+    copyRoot.appendChild(h);
+    copyRoot.appendChild(p);
+    copyRoot.appendChild(ul);
+  };
+
+  const renderTabs = () => {
+    tabsRoot.textContent = "";
+    PROCESS_STEPS.forEach((s, i) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "process-tab";
+      b.setAttribute("role", "tab");
+      b.setAttribute("aria-selected", i === active ? "true" : "false");
+      b.textContent = s.label;
+      b.addEventListener("click", () => {
+        active = i;
+        renderTabs();
+        renderCopy();
+      });
+      tabsRoot.appendChild(b);
     });
+  };
+
+  const slides = qsa(".hero-gallery__slide", track);
+  let slideIdx = 0;
+
+  const renderSlide = () => {
+    track.style.transform = `translateX(${-slideIdx * 100}%)`;
+  };
+
+  prev?.addEventListener("click", () => {
+    slideIdx = clamp(slideIdx - 1, 0, slides.length - 1);
+    renderSlide();
+  });
+  next?.addEventListener("click", () => {
+    slideIdx = clamp(slideIdx + 1, 0, slides.length - 1);
+    renderSlide();
+  });
+
+  renderTabs();
+  renderCopy();
+  renderSlide();
 }
 
-/* ========================================
-   INTERACTIVE EFFECTS & ANIMATIONS
-   ======================================== */
+/* -----------------------------------------------------------------------------
+   FAQ accordion
+   ----------------------------------------------------------------------------- */
 
-// Add smooth hover effects to interactive elements
-document.querySelectorAll('.feature-card, .product-card, .testimonial-card').forEach(card => {
-    card.addEventListener('mouseenter', function() {
-        // Already handled by CSS hover states
-        // This is here for future enhancements
-    });
-});
+function initFaq() {
+  const root = qs("#faqAccordion");
+  if (!root) return;
 
-// Button ripple effect on click (optional enhancement)
-document.querySelectorAll('.btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-        // Get click position
-        const rect = this.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
+  qsa(".accordion__item", root).forEach((item) => {
+    const btn = qs(".accordion__trigger", item);
+    const panel = qs(".accordion__panel", item);
+    if (!btn || !panel) return;
 
-        // Create ripple element
-        const ripple = document.createElement('span');
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.style.position = 'absolute';
-        ripple.style.width = '20px';
-        ripple.style.height = '20px';
-        ripple.style.borderRadius = '50%';
-        ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        ripple.style.pointerEvents = 'none';
-        ripple.style.animation = 'ripple 0.6s ease-out';
-
-        // Add animation to page
-        if (!document.getElementById('ripple-style')) {
-            const style = document.createElement('style');
-            style.id = 'ripple-style';
-            style.textContent = `
-                @keyframes ripple {
-                    from {
-                        transform: scale(1);
-                        opacity: 1;
-                    }
-                    to {
-                        transform: scale(4);
-                        opacity: 0;
-                    }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-    });
-});
-
-/* ========================================
-   PAGE PERFORMANCE & OPTIMIZATION
-   ======================================== */
-
-// Optimize performance by debouncing scroll events
-let scrollTimeout;
-function debounce(callback, delay) {
-    return function() {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(callback, delay);
+    const setOpen = (open) => {
+      item.classList.toggle("is-open", open);
+      btn.setAttribute("aria-expanded", open ? "true" : "false");
+      panel.hidden = !open;
     };
+
+    btn.addEventListener("click", () => {
+      const willOpen = !item.classList.contains("is-open");
+      qsa(".accordion__item", root).forEach((it) => {
+        const b = qs(".accordion__trigger", it);
+        const p = qs(".accordion__panel", it);
+        if (!b || !p) return;
+        const open = it === item ? willOpen : false;
+        it.classList.toggle("is-open", open);
+        b.setAttribute("aria-expanded", open ? "true" : "false");
+        p.hidden = !open;
+      });
+    });
+  });
 }
 
-// Lazy load images when they come into view
-const imageElements = document.querySelectorAll('img');
-const imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const img = entry.target;
-            if (img.dataset.src) {
-                img.src = img.dataset.src;
-                img.removeAttribute('data-src');
-                imageObserver.unobserve(img);
-            }
-        }
-    });
-}, {
-    rootMargin: '50px 0px',
-    threshold: 0.01
-});
+/* -----------------------------------------------------------------------------
+   Modals
+   ----------------------------------------------------------------------------- */
 
-imageElements.forEach(img => {
-    if (img.dataset.src) {
-        imageObserver.observe(img);
-    }
-});
+function initModals() {
+  /** @type {HTMLElement | null} */
+  let lastFocus = null;
 
-/* ========================================
-   UTILITY FUNCTIONS
-   ======================================== */
+  const modalEmail = qs("#modalEmail");
+  const modalCallback = qs("#modalCallback");
 
-// Check if an element is in viewport
-function isInViewport(element) {
-    const rect = element.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  const openModal = (el) => {
+    if (!el) return;
+    lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    el.removeAttribute("hidden");
+    document.body.style.overflow = "hidden";
+      document.body.classList.add("modal-open"); // ← add this line
+
+
+    const focusable = qsa('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el).filter(
+      (n) => !n.hasAttribute("disabled")
     );
-}
+    (focusable[0] || el).focus?.();
+  };
 
-// Animate counter numbers when element comes into view
-const counters = document.querySelectorAll('.stat-number');
-let counterAnimated = false;
+  const closeModal = (el) => {
+    if (!el) return;
+    el.setAttribute("hidden", "");
+      document.body.classList.remove("modal-open"); // ← add this line
 
-window.addEventListener('scroll', () => {
-    if (!counterAnimated && counters.length > 0) {
-        const statsSection = document.querySelector('.stats-section');
-        if (isInViewport(statsSection)) {
-            animateCounters();
-            counterAnimated = true;
-        }
-    }
-});
+    document.body.style.overflow = "";
 
-function animateCounters() {
-    counters.forEach(counter => {
-        const target = parseInt(counter.textContent);
-        const duration = 2000; // 2 seconds
-        const startTime = Date.now();
+    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    lastFocus = null;
+  };
 
-        function updateCounter() {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
+  document.addEventListener("click", (e) => {
+    const t = e.target;
+    if (!(t instanceof HTMLElement)) return;
+    const id = t.getAttribute("data-close");
+    if (!id) return;
+    const el = document.getElementById(id);
+    if (el) closeModal(el);
+  });
 
-            // Extract just the number part for animation
-            const numberText = counter.textContent.replace(/[^0-9]/g, '');
-            const animatedNumber = Math.floor(parseInt(numberText) * progress);
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (modalEmail && !modalEmail.hasAttribute("hidden")) closeModal(modalEmail);
+    if (modalCallback && !modalCallback.hasAttribute("hidden")) closeModal(modalCallback);
+  });
 
-            // Format the number based on the original text
-            if (counter.textContent.includes('+')) {
-                counter.textContent = animatedNumber + '+';
-            } else if (counter.textContent.includes('%')) {
-                counter.textContent = animatedNumber + '%';
-            } else if (counter.textContent.includes('/')) {
-                counter.textContent = '24/7';
-            } else {
-                counter.textContent = animatedNumber;
-            }
+  const wireOpeners = () => {
+    qs("#btnDatasheet")?.addEventListener("click", () => openModal(modalEmail));
+    qs("#btnHeroSpecs")?.addEventListener("click", () => openModal(modalEmail));
 
-            if (progress < 1) {
-                requestAnimationFrame(updateCounter);
-            }
-        }
+    qs("#btnHeroQuote")?.addEventListener("click", () => openModal(modalCallback));
+    qs("#btnFeatureQuote")?.addEventListener("click", () => openModal(modalCallback));
+    qs("#btnExpert")?.addEventListener("click", () => openModal(modalCallback));
+  };
 
-        requestAnimationFrame(updateCounter);
+  const wireForms = () => {
+    qs("#formEmailModal")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      closeModal(modalEmail);
     });
+
+    qs("#formCallbackModal")?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      closeModal(modalCallback);
+    });
+  };
+
+  const wireEmailUi = () => {
+    const email = qs("#modalEmailField");
+    const btn = qs(".btn--brochure");
+    if (!(email instanceof HTMLInputElement) || !btn) return;
+
+    const sync = () => {
+      const ok = email.value.trim().length > 3 && email.validity.valid;
+      btn.disabled = !ok;
+      btn.style.opacity = ok ? "1" : "0.65";
+    };
+
+    email.addEventListener("input", sync);
+    sync();
+  };
+
+  wireOpeners();
+  wireForms();
+  wireEmailUi();
 }
 
-/* ========================================
-   INITIALIZATION
-   ======================================== */
+/* -----------------------------------------------------------------------------
+   Forms (non-modal)
+   ----------------------------------------------------------------------------- */
 
-// Log that the page has loaded successfully
-document.addEventListener('DOMContentLoaded', () => {
-    console.log('Page loaded - All interactive features initialized');
-    
-    // Set focus on main content for accessibility
-    document.querySelector('main')?.focus();
-});
+function initForms() {
+  qs("#catalogForm")?.addEventListener("submit", (e) => e.preventDefault());
+  qs("#catalogFormPage8")?.addEventListener("submit", (e) => e.preventDefault());
+  qs("#leadForm")?.addEventListener("submit", (e) => e.preventDefault());
+  qsa(".downloads-list__action").forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
+}
 
-// Handle window resize for responsive behavior
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        // Adjust any layout calculations if needed
-        console.log('Window resized');
-    }, 250);
+/* -----------------------------------------------------------------------------
+   Boot
+   ----------------------------------------------------------------------------- */
+
+document.addEventListener("DOMContentLoaded", () => {
+  initStickyHeader();
+  initMobileNav();
+  initHeroCarousel();
+  initHScroll(qs("#appsCarousel"), qs("#appsPrev"), qs("#appsNext"));
+  initHScroll(qs("#testiCarousel"), null, null);
+  initProcess();
+  initFaq();
+  initModals();
+  initForms();
 });
