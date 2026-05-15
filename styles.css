@@ -1,19 +1,41 @@
 /* =============================================================================
-   Mangalam HDPE Pipes — Figma-matched CSS
-   Breakpoints: 1600 / 1440 / 1200 / 800 / 360
-   Padding rules per Figma notes:
-     1600px: 100px all sides
-     1440px: 100px all sides  
-     1200px: 80px all sides
-     800px:  80px top/bottom, 48px left/right
-     360px:  48px top/bottom, 16px left/right
-   Max-width content shell: 1240px
+   MANGALAM HDPE PIPES — MAIN STYLESHEET
+   
+   Project: Product landing page for HDPE Pipes & Coils
+   Design: Figma-matched responsive design
+   
+   BREAKPOINTS:
+   - 1600px: Desktop large (padding: 100px)
+   - 1440px: Desktop standard (padding: 100px)
+   - 1200px: Desktop small / Tablet landscape (padding: 80px)
+   - 800px:  Tablet portrait (padding: 80px vertical, 48px horizontal)
+   - 480px:  Mobile (padding: 48px vertical, 16px horizontal)
+   
+   LAYOUT:
+   - Max content width: 1240px
+   - Responsive padding via CSS custom properties
+   
+   SECTIONS:
+   1. CSS Variables & Reset
+   2. Base Styles & Typography
+   3. Layout Components (Shell, Header, Navigation)
+   4. Button Styles
+   5. Page Sections (Hero, Specs, Features, FAQ, etc.)
+   6. Footer
+   7. Modals
+   8. Responsive Media Queries
    ============================================================================= */
 
+/* =============================================================================
+   1. CSS CUSTOM PROPERTIES (VARIABLES)
+   Design tokens for colors, spacing, and effects
+   ============================================================================= */
 :root {
+  /* Layout */
   --shell: 1240px;
   --gutter: 100px;
 
+  /* Colors: Base */
   --ink: #0f172a;
   --ink-soft: #334155;
   --muted: #64748b;
@@ -22,26 +44,40 @@
   --page-muted: #f3f4f6;
   --page-light: #fafafa;
 
+  /* Colors: Brand */
   --blue: #1e40af;
   --blue-dark: #172554;
   --blue-nav: #1d2b64;
   --blue-soft: #e8ecff;
   --accent: #1d4ed8;
 
+  /* Colors: UI Elements */
   --pill-ship-bg: #fef3c7;
   --pill-ship-ink: #b45309;
   --pill-ret-bg: #fef9c3;
   --pill-ret-ink: #854d0e;
 
+  /* Border Radius */
   --radius-lg: 20px;
   --radius-md: 12px;
   --radius-sm: 8px;
 
+  /* Effects */
   --shadow-soft: 0 18px 50px rgba(15, 23, 42, 0.12);
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  
+  /* Typography */
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
+/* =============================================================================
+   2. RESET & BASE STYLES
+   Normalize browser defaults and set base typography
+   ============================================================================= */
+/* =============================================================================
+   2. RESET & BASE STYLES
+   Normalize browser defaults and set base typography
+   ============================================================================= */
 *, *::before, *::after { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -55,18 +91,21 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Base element resets */
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; text-decoration: none; }
 button, input, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
 ul { margin: 0; padding: 0; list-style: none; }
 
+/* Accessibility: Visually hidden but screen-reader accessible */
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0;
   margin: -1px; overflow: hidden; clip: rect(0,0,0,0);
   white-space: nowrap; border: 0;
 }
 
+/* Accessibility: Skip to main content link */
 .skip-link {
   position: absolute; left: -999px; top: 8px;
   padding: 8px 12px; background: var(--blue); color: var(--white);
@@ -74,9 +113,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .skip-link:focus { left: 8px; }
 
-/* -----------------------------------------------------------------------
-   Shell — content max-width 1240px centered
-   ----------------------------------------------------------------------- */
+/* =============================================================================
+   3. LAYOUT COMPONENTS
+   Shell container, headers, and navigation
+   ============================================================================= */
+
+/* Shell — Content container with max-width */
 .shell {
   width: 100%;
   max-width: var(--shell);
@@ -84,9 +126,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-inline: var(--gutter);
 }
 
-/* -----------------------------------------------------------------------
-   Site Header
-   ----------------------------------------------------------------------- */
+/* =============================================================================
+   SITE HEADER & NAVIGATION
+   Includes both main header and sticky header
+   ============================================================================= */
 .site-header {
   position: relative;
   z-index: 50;
@@ -143,7 +186,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   transform: translateY(1px);
 }
 
-/* Buttons */
+/* =============================================================================
+   4. BUTTON STYLES
+   Reusable button components with variants
+   ============================================================================= */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -213,9 +259,12 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .nav-toggle span { width: 20px; height: 2px; background: #111827; border-radius: 2px; }
 
-/* -----------------------------------------------------------------------
-   Sections — base
-   ----------------------------------------------------------------------- */
+/* =============================================================================
+   5. PAGE SECTIONS
+   Styles for all major page sections
+   ============================================================================= */
+
+/* Base section styles */
 .section { position: relative; padding-block: 100px; }
 
 .section--dark {
@@ -362,13 +411,24 @@ ul { margin: 0; padding: 0; list-style: none; }
 .badges { display: flex; flex-wrap: wrap; gap: 10px; }
 .badges--certs { gap: 10px; }
 .badge-cert {
-  display: inline-flex; align-items: center; gap: 7px;
+  display: inline-flex; align-items: center; gap: 8px;
   background: #fff; border: 1px solid #e2e8f0; border-radius: 8px;
-  padding: 7px 11px 7px 8px; font-size: 0.78rem; font-weight: 700;
+  padding: 8px 14px 8px 10px; font-size: 0.8rem; font-weight: 600;
   color: #0f172a; letter-spacing: 0.01em;
-  box-shadow: 0 1px 2px rgba(15,23,42,0.04);
+  box-shadow: 0 1px 3px rgba(15,23,42,0.06);
 }
-.badge-cert__mark { display: grid; place-items: center; flex: 0 0 auto; }
+.badge-cert__icon { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  flex: 0 0 auto; 
+  width: 20px;
+  height: 20px;
+}
+.badge-cert__icon svg {
+  width: 100%;
+  height: 100%;
+}
 
 .hero__title {
   margin: 0;
@@ -381,13 +441,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hero-bullets { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 .hero-bullets--checks li {
   position: relative; padding-left: 30px;
-  color: #475569; font-size: 0.95rem;
+  color: #1e293b; font-size: 0.95rem; font-weight: 500;
 }
 .hero-bullets--checks li::before {
+  content: ""; position: absolute; left: 0; top: 0.1em;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: #3b82f6; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-bullets--checks li::after {
   content: "✓"; position: absolute; left: 0; top: 0.1em;
-  width: 20px; height: 20px; border-radius: 999px;
-  background: #2563eb; color: #fff; font-size: 10px;
+  width: 20px; height: 20px;
+  color: #fff; font-size: 11px;
   font-weight: 800; line-height: 20px; text-align: center;
+  pointer-events: none;
 }
 
 .price-card {
@@ -963,8 +1032,12 @@ body > *:not(.modal) { transition: filter 0.25s ease; }
   .nav-toggle { display: inline-flex; }
   .nav__list .btn { width: 100%; justify-content: center; }
 
-  /* Hero stacks */
-  .hero__grid { grid-template-columns: 1fr; gap: 28px; }
+  /* Hero stacks - content above image */
+  .hero__grid { 
+    grid-template-columns: 1fr; 
+    gap: 28px; 
+  }
+  .hero-copy { order: -1; } /* Move content above gallery */
   .hero__title { font-size: clamp(1.7rem,5.5vw,2.2rem); }
 
   /* Process stacks */
@@ -1011,45 +1084,478 @@ body > *:not(.modal) { transition: filter 0.25s ease; }
   .site-header__inner { min-height: 64px; }
   .brand--image img { height: 36px; }
 
-  .hero__title { font-size: clamp(1.5rem,6vw,2rem); }
-  .price-card__value { font-size: 1.3rem; }
-  .hero-actions { flex-direction: column; }
-  .hero-actions .btn { width: 100%; justify-content: center; }
+  /* Hero section mobile - content above image */
+  .hero__grid { 
+    grid-template-columns: 1fr; 
+    gap: 24px; 
+  }
+  .hero-copy { order: -1; } /* Ensure content is above gallery */
+  
+  .breadcrumb { font-size: 0.75rem; margin-bottom: 16px; }
+  
+  .badges--certs { 
+    gap: 8px; 
+    margin-bottom: 16px;
+  }
+  .badge-cert { 
+    font-size: 0.72rem; 
+    padding: 7px 12px 7px 9px; 
+    border-radius: 6px;
+    gap: 7px;
+  }
+  .badge-cert__icon {
+    width: 18px;
+    height: 18px;
+  }
 
-  .badges--certs { gap: 6px; }
-  .badge-cert { font-size: 0.72rem; padding: 6px 9px 6px 7px; }
+  .hero__title { 
+    font-size: 1.75rem; 
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
 
-  .hero-thumbs { gap: 6px; }
-  .hero-thumb, .hero-thumb--empty { flex: 0 0 52px; height: 52px; }
+  .hero-bullets { gap: 8px; margin-bottom: 16px; }
+  .hero-bullets--checks li {
+    font-size: 0.875rem;
+    padding-left: 26px;
+  }
+  .hero-bullets--checks li::before {
+    width: 18px;
+    height: 18px;
+    line-height: 18px;
+    font-size: 9px;
+  }
+
+  .price-card { 
+    padding: 16px; 
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+  .price-card__label { font-size: 0.75rem; margin-bottom: 4px; }
+  .price-card__value { font-size: 1.5rem; margin-bottom: 10px; }
+  .price-card__tags { gap: 6px; margin-bottom: 10px; }
+  .pill { font-size: 0.7rem; padding: 4px 8px; }
+  .price-card__foot { padding-top: 10px; font-size: 0.75rem; }
+  .price-card__pill { font-size: 0.72rem; padding: 4px 10px; }
+
+  .hero-actions { 
+    flex-direction: column; 
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .hero-actions .btn { 
+    width: 100%; 
+    justify-content: center;
+    padding: 12px 20px;
+    font-size: 0.875rem;
+  }
+
+  .hero-gallery__viewport { border-radius: 16px; }
+  .hero-thumbs { gap: 8px; margin-top: 12px; }
+  .hero-thumb, .hero-thumb--empty { 
+    flex: 0 0 56px; 
+    height: 56px; 
+    border-radius: 8px;
+  }
 
   .carousel-btn { width: 36px; height: 36px; }
+  .carousel-btn--prev { left: 8px; }
+  .carousel-btn--next { right: 8px; }
 
-  .contact-panel { padding: 20px 16px; border-radius: 18px; }
+  .trust-bar { margin-top: 32px; }
+  .trust-bar--light { padding-top: 20px; }
+  .trust-bar__label { 
+    font-size: 0.7rem; 
+    margin-bottom: 14px;
+    letter-spacing: 0.08em;
+  }
+  .trust-bar__logos { gap: 16px; }
+  .trust-logo img { height: 28px; max-width: min(120px,30vw); }
 
-  .feature-grid { grid-template-columns: 1fr; }
-  .product-cards { grid-template-columns: 1fr; }
-  .footer-grid { grid-template-columns: 1fr; }
-
-  .app-card { flex-basis: 88vw; min-height: 260px; }
-
-  .spec-table { font-size: 0.82rem; }
-  .spec-table td { padding: 12px 14px; }
-  .spec-table td:first-child { width: 44%; }
-
-  .process-tabs { gap: 6px; }
-  .process-tab { padding: 7px 12px; font-size: 0.78rem; }
-
-  .faq-title { font-size: clamp(1.5rem,5vw,1.9rem); }
-
-  .footer { padding: 40px 0 20px; }
-  .footer-banner { padding: 14px 16px; }
-  .footer-legal { flex-direction: column; align-items: flex-start; gap: 8px; }
-
-  .modal__dialog { width: 100%; border-radius: 14px; }
-  .downloads-list__row { padding: 16px; }
+  /* Technical Specifications mobile */
+  .section--dark .section-head h2 { font-size: 1.75rem; }
+  .section--dark .section-head__sub { font-size: 0.9rem; }
   
-  .trust-bar__logos { gap: 12px; }
-  .trust-logo img { height: 22px; max-width: min(100px,28vw); }
+  .spec-table-wrap { border-radius: 12px; }
+  .spec-table { font-size: 0.8rem; }
+  .spec-table thead th { 
+    padding: 12px 16px; 
+    font-size: 0.65rem;
+  }
+  .spec-table td { 
+    padding: 14px 16px; 
+  }
+  .spec-table td:first-child { 
+    width: 42%; 
+    font-size: 0.8rem;
+  }
+  .spec-table td:last-child { font-size: 0.8rem; }
+
+  .section-cta { margin-top: 32px; }
+  .btn--outline-light { 
+    padding: 11px 20px; 
+    font-size: 0.85rem;
+  }
+
+  /* Feature cards mobile */
+  .feature-grid { 
+    grid-template-columns: 1fr; 
+    gap: 16px;
+  }
+  .feature-card { 
+    padding: 20px; 
+    border-radius: 16px;
+    min-height: auto;
+  }
+  .feature-card__icon { 
+    width: 40px; 
+    height: 40px; 
+    margin-bottom: 12px;
+    border-radius: 8px;
+  }
+  .feature-card__icon img { width: 22px; height: 22px; }
+  .feature-card h3 { 
+    font-size: 0.95rem; 
+    margin-bottom: 8px;
+  }
+  .feature-card p { 
+    font-size: 0.85rem; 
+    line-height: 1.5;
+  }
+
+  .section-cta--center { margin-top: 24px; }
+  .btn--wide { padding-inline: 32px; }
+
+  /* FAQ mobile */
+  .faq-title { 
+    font-size: 1.75rem; 
+    margin-bottom: 20px;
+  }
+
+  .accordion { gap: 10px; margin-bottom: 24px; }
+  .accordion__item { border-radius: 12px; }
+  .accordion__trigger { 
+    padding: 14px 48px 14px 16px; 
+    font-size: 0.9rem;
+  }
+  .accordion__icon { 
+    width: 28px; 
+    height: 28px; 
+    right: 12px;
+  }
+  .accordion__icon::before {
+    width: 8px;
+    height: 8px;
+  }
+  .accordion__panel { 
+    padding: 0 16px 16px; 
+    font-size: 0.875rem;
+  }
+
+  /* Catalog mail mobile */
+  .catalog-mail--inset { 
+    padding: 20px; 
+    border-radius: 12px;
+  }
+  .catalog-mail__inner { 
+    flex-direction: column; 
+    align-items: stretch; 
+    gap: 16px;
+  }
+  .catalog-mail__copy h3 { 
+    font-size: 1rem; 
+    margin-bottom: 6px;
+  }
+  .catalog-mail__copy p { font-size: 0.875rem; }
+  .catalog-mail__stack { 
+    max-width: none; 
+    gap: 10px;
+  }
+  .catalog-mail__stack input { 
+    padding: 11px 12px; 
+    font-size: 0.875rem;
+  }
+  .btn--catalog-submit { 
+    padding: 11px 18px; 
+    font-size: 0.9rem;
+  }
+
+  /* Applications carousel mobile */
+  .split-head { 
+    flex-direction: column; 
+    gap: 16px; 
+    margin-bottom: 20px;
+  }
+  .split-head .section-head h2 { font-size: 1.75rem; }
+  .split-head .section-head__sub { font-size: 0.9rem; }
+  .split-head__controls { 
+    align-self: flex-end; 
+    gap: 8px;
+  }
+
+  .icon-round { 
+    width: 40px; 
+    height: 40px; 
+    font-size: 0.95rem;
+  }
+
+  .h-carousel { gap: 12px; }
+  .app-card { 
+    flex-basis: 85vw; 
+    min-height: 280px;
+    border-radius: 18px;
+  }
+  .app-card__overlay { padding: 18px; }
+  .app-card__overlay h3 { 
+    font-size: 1.1rem; 
+    margin-bottom: 6px;
+  }
+  .app-card__overlay p { font-size: 0.85rem; }
+
+  /* Manufacturing process mobile */
+  .section--process-light .section-head h2 { font-size: 1.75rem; }
+  .section--process-light .section-head__sub { font-size: 0.9rem; }
+
+  .process-card { 
+    padding: 20px; 
+    border-radius: 20px;
+  }
+  .process-tabs { 
+    gap: 6px; 
+    padding-bottom: 10px; 
+    margin-bottom: 16px;
+  }
+  .process-tab { 
+    padding: 8px 14px; 
+    font-size: 0.75rem;
+    border-radius: 20px;
+  }
+  .process-body { 
+    grid-template-columns: 1fr; 
+    gap: 20px;
+  }
+  .process-copy h3 { 
+    font-size: 1.1rem; 
+    margin-bottom: 8px;
+  }
+  .process-copy p { 
+    font-size: 0.875rem; 
+    margin-bottom: 12px;
+  }
+  .checklist { gap: 8px; }
+  .checklist li { font-size: 0.85rem; }
+  .check-ico { 
+    width: 16px; 
+    height: 16px; 
+    font-size: 10px;
+  }
+
+  .process-carousel.hero-gallery__viewport { border-radius: 14px; }
+
+  /* Testimonials mobile */
+  .h-carousel--testimonials { gap: 12px; }
+  .testi-card { 
+    flex-basis: 90vw; 
+    padding: 20px; 
+    border-radius: 16px;
+    min-height: auto;
+  }
+  .testi-card__quote { 
+    font-size: 2rem; 
+    margin-bottom: 8px;
+  }
+  .testi-card h3 { 
+    font-size: 0.95rem; 
+    margin-bottom: 8px;
+  }
+  .testi-card > p { 
+    font-size: 0.85rem; 
+    margin-bottom: 14px;
+  }
+  .testi-card__foot { gap: 10px; }
+  .testi-card__foot strong { font-size: 0.875rem; }
+  .testi-card__foot span { font-size: 0.78rem; }
+  .testi-card__avatar { 
+    width: 38px; 
+    height: 38px;
+  }
+
+  /* Portfolio mobile */
+  .product-cards { 
+    grid-template-columns: 1fr; 
+    gap: 16px; 
+    margin-bottom: 24px;
+  }
+  .product-card { border-radius: 16px; }
+  .product-card__img { border-radius: 16px 16px 0 0; }
+  .product-card__body { padding: 18px; }
+  .product-card__body h3 { 
+    font-size: 0.95rem; 
+    margin-bottom: 8px;
+  }
+  .product-card__body p { 
+    font-size: 0.85rem; 
+    margin-bottom: 12px;
+  }
+  .btn--learn-more { 
+    padding: 8px 16px; 
+    font-size: 0.85rem;
+  }
+
+  /* Banner CTA mobile */
+  .banner-cta { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding: 18px 20px;
+    border-radius: 14px;
+  }
+  .banner-cta h3 { 
+    font-size: 1rem; 
+    margin-bottom: 4px;
+  }
+  .banner-cta p { font-size: 0.85rem; }
+  .btn--primary.btn--icon { 
+    width: 100%; 
+    padding: 11px 20px;
+  }
+
+  /* Resources & Downloads mobile */
+  .section--resources .section-head h2 { font-size: 1.75rem; }
+  .section--resources .section-head__sub { font-size: 0.9rem; }
+
+  .downloads-card { border-radius: 12px; }
+  .downloads-list__row { 
+    padding: 16px 18px; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px;
+  }
+  .downloads-list__name { 
+    font-size: 0.9rem; 
+    flex: 1 1 auto;
+  }
+  .downloads-list__action { 
+    font-size: 0.85rem; 
+    align-self: flex-end;
+  }
+
+  /* Contact form mobile */
+  .contact-panel { 
+    padding: 24px 20px; 
+    border-radius: 20px;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .contact-panel__left h2 { 
+    font-size: 1.75rem; 
+    margin-bottom: 12px;
+  }
+  .contact-panel__left > p { 
+    font-size: 0.9rem; 
+    margin-bottom: 14px;
+  }
+  .contact-panel__rule { margin: 14px 0; }
+  .contact-panel__fine { font-size: 0.85rem; }
+
+  .contact-panel__form { 
+    padding: 20px; 
+    border-radius: 14px;
+    gap: 10px;
+  }
+  .contact-panel__form h3 { 
+    font-size: 1rem; 
+    margin-bottom: 6px;
+  }
+  .contact-panel__form input { 
+    padding: 11px 12px; 
+    font-size: 0.875rem;
+  }
+  .phone-row__prefix { 
+    padding: 11px 10px; 
+    font-size: 0.875rem;
+  }
+  .phone-row input { padding: 11px 12px; }
+  .btn--dark.btn--block { 
+    padding: 12px 20px; 
+    font-size: 0.9rem;
+  }
+
+  /* Footer mobile */
+  .footer { padding: 40px 0 20px; }
+  
+  .footer-banner { 
+    padding: 16px 18px; 
+    border-radius: 14px;
+    flex-direction: column; 
+    align-items: flex-start; 
+    margin-bottom: 24px;
+  }
+  .brand--footer.brand--image img { height: 40px; }
+  .footer-banner__tag { 
+    text-align: left; 
+    font-size: 0.875rem;
+  }
+
+  .footer-grid { 
+    grid-template-columns: 1fr; 
+    gap: 24px; 
+    margin-bottom: 20px;
+  }
+  .footer-heading { 
+    font-size: 0.875rem; 
+    margin-bottom: 10px;
+  }
+  .footer-list { 
+    gap: 7px; 
+    font-size: 0.85rem;
+  }
+  .footer-contact { 
+    gap: 9px; 
+    font-size: 0.85rem;
+  }
+  .footer-contact svg { width: 16px; height: 16px; }
+
+  .footer-social { 
+    gap: 8px; 
+    margin-top: 12px; 
+    padding-top: 12px;
+  }
+  .footer-social a { 
+    width: 34px; 
+    height: 34px; 
+    font-size: 0.85rem;
+  }
+
+  .footer-legal { 
+    flex-direction: column; 
+    align-items: flex-start; 
+    gap: 10px; 
+    padding-top: 16px;
+    font-size: 0.78rem;
+  }
+  .footer-legal nav { gap: 12px; }
+
+  /* Modal mobile */
+  .modal__dialog { 
+    width: 100%; 
+    border-radius: 14px;
+  }
+  .modal__head { padding: 16px 16px 12px; }
+  .modal__head h2 { font-size: 0.95rem; }
+  .modal__x { width: 32px; height: 32px; font-size: 18px; }
+  .modal__body { padding: 16px; }
+  .modal__foot { padding: 12px 16px; }
+  
+  .field { gap: 6px; margin-bottom: 12px; }
+  .field label { font-size: 0.75rem; }
+  .field input { 
+    padding: 11px 12px; 
+    font-size: 0.875rem;
+  }
+  .btn--brochure { 
+    padding: 11px 22px; 
+    font-size: 0.875rem;
+  }
 }
 
 /* Reduced motion */

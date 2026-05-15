@@ -1,20 +1,37 @@
 /**
- * Mangalam HDPE Pipes — vanilla JS
- * - Sticky header
- * - Mobile nav
- * - Hero carousel + thumbs
- * - H-scroll carousels (applications, testimonials)
+ * ============================================================================
+ * MANGALAM HDPE PIPES — MAIN JAVASCRIPT
+ * ============================================================================
+ * 
+ * This file handles all interactive functionality for the landing page:
+ * 
+ * FEATURES:
+ * - Sticky header (shows/hides on scroll)
+ * - Mobile navigation (hamburger menu)
+ * - Hero image carousel with thumbnails
+ * - Horizontal scroll carousels (applications, testimonials)
  * - Manufacturing process tabs
  * - FAQ accordion
- * - Modals (backdrop blur, Esc, focus trap)
- * - Forms
+ * - Modal dialogs (email request, callback form)
+ * - Form handling
+ * 
+ * DEPENDENCIES: None (vanilla JavaScript)
+ * BROWSER SUPPORT: Modern browsers (ES6+)
+ * 
+ * ============================================================================
  */
 
+/* ============================================================================
+   UTILITY FUNCTIONS
+   Helper functions used throughout the application
+   ============================================================================ */
+
+// DOM query shortcuts
 const qs  = (sel, root = document) => root.querySelector(sel);
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
 /* -------------------------------------------------------------------------
-   Utilities
+   Math and UI Utilities
    ------------------------------------------------------------------------- */
 function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 function prefersReducedMotion() {
@@ -25,9 +42,11 @@ function debounce(fn, ms) {
   return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
-/* -------------------------------------------------------------------------
-   Sticky header — slides in after first section, hides on scroll down
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   STICKY HEADER
+   Slides in after scrolling past hero section
+   Hides when scrolling down, shows when scrolling up
+   ============================================================================ */
 function initStickyHeader() {
   const sticky = qs("#stickyHeader");
   const page1  = qs("#page1");
@@ -69,9 +88,11 @@ function initStickyHeader() {
   window.addEventListener("scroll", apply, { passive: true });
 }
 
-/* -------------------------------------------------------------------------
-   Mobile navigation
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   MOBILE NAVIGATION
+   Hamburger menu toggle for mobile devices
+   Closes on link click, resize to desktop, or outside click
+   ============================================================================ */
 function initMobileNav() {
   const mainToggle   = qs("#mainNavToggle");
   const stickyToggle = qs("#stickyNavToggle");
@@ -108,9 +129,11 @@ function initMobileNav() {
   });
 }
 
-/* -------------------------------------------------------------------------
-   Hero carousel + thumbnails
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   HERO CAROUSEL
+   Image gallery with thumbnail navigation
+   Supports keyboard, mouse, and touch interactions
+   ============================================================================ */
 function initHeroCarousel() {
   const track     = qs("#heroTrack");
   const prev      = qs("#heroPrev");
@@ -171,9 +194,11 @@ function initHeroCarousel() {
   render();
 }
 
-/* -------------------------------------------------------------------------
-   Horizontal scroll regions
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   HORIZONTAL SCROLL CAROUSELS
+   Reusable function for horizontal scrolling sections
+   Used for: Applications carousel, Testimonials carousel
+   ============================================================================ */
 function initHScroll(root, prevBtn, nextBtn, amountRatio = 0.86) {
   if (!root) return;
   const step = () => Math.max(240, Math.floor(root.clientWidth * amountRatio));
@@ -182,9 +207,13 @@ function initHScroll(root, prevBtn, nextBtn, amountRatio = 0.86) {
   nextBtn?.addEventListener("click", () => root.scrollBy({ left:  step(), behavior: beh() }));
 }
 
-/* -------------------------------------------------------------------------
-   Manufacturing process tabs
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   MANUFACTURING PROCESS TABS
+   Interactive tab navigation showing production steps
+   Content and tabs are dynamically generated from PROCESS_STEPS data
+   ============================================================================ */
+
+// Process steps data
 const PROCESS_STEPS = [
   {
     key: "raw", label: "Raw Material",
@@ -236,6 +265,7 @@ const PROCESS_STEPS = [
   },
 ];
 
+// Initialize process tabs
 function initProcess() {
   const tabsRoot = qs("#processTabs");
   const copyRoot = qs("#processCopy");
@@ -313,9 +343,11 @@ function initProcess() {
   renderSlide();
 }
 
-/* -------------------------------------------------------------------------
-   FAQ accordion
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   FAQ ACCORDION
+   Expandable/collapsible FAQ items
+   Only one item can be open at a time
+   ============================================================================ */
 function initFaq() {
   const root = qs("#faqAccordion");
   if (!root) return;
@@ -341,9 +373,11 @@ function initFaq() {
   });
 }
 
-/* -------------------------------------------------------------------------
-   Modals — with backdrop blur, Esc, focus trap
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   MODAL DIALOGS
+   Handles modal open/close with backdrop blur, Esc key, and focus management
+   Two modals: Email request and Callback form
+   ============================================================================ */
 function initModals() {
   let lastFocus = null;
 
@@ -414,9 +448,11 @@ function initModals() {
   }
 }
 
-/* -------------------------------------------------------------------------
-   Forms (non-modal)
-   ------------------------------------------------------------------------- */
+/* ============================================================================
+   FORM HANDLING
+   Basic form submission handlers (non-modal forms)
+   Prevents default submission for demo purposes
+   ============================================================================ */
 function initForms() {
   qs("#catalogForm")?.addEventListener("submit", e => e.preventDefault());
   qs("#leadForm")?.addEventListener("submit",    e => e.preventDefault());
