@@ -1,171 +1,141 @@
 /**
- * Mangalam / Meera — vanilla JS modules
- * - Sticky header (post first fold, hide on scroll up)
- * - Carousels + horizontal scroll regions
- * - Modals (backdrop / Esc / close)
- * - FAQ accordion + light form handling
+ * Mangalam HDPE Pipes — vanilla JS
+ * - Sticky header
+ * - Mobile nav
+ * - Hero carousel + thumbs
+ * - H-scroll carousels (applications, testimonials)
+ * - Manufacturing process tabs
+ * - FAQ accordion
+ * - Modals (backdrop blur, Esc, focus trap)
+ * - Forms
  */
 
-const qs = (sel, root = document) => root.querySelector(sel);
+const qs  = (sel, root = document) => root.querySelector(sel);
 const qsa = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-/* -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------
    Utilities
-   ----------------------------------------------------------------------------- */
-
-function clamp(n, min, max) {
-  return Math.max(min, Math.min(max, n));
-}
-
+   ------------------------------------------------------------------------- */
+function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 function prefersReducedMotion() {
-  return window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
-
 function debounce(fn, ms) {
   let t = null;
-  return (...args) => {
-    clearTimeout(t);
-    t = setTimeout(() => fn(...args), ms);
-  };
+  return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); };
 }
 
-/* -----------------------------------------------------------------------------
-   Sticky header
-   ----------------------------------------------------------------------------- */
-
+/* -------------------------------------------------------------------------
+   Sticky header — slides in after first section, hides on scroll down
+   ------------------------------------------------------------------------- */
 function initStickyHeader() {
   const sticky = qs("#stickyHeader");
-  const page1 = qs("#page1");
+  const page1  = qs("#page1");
   if (!sticky || !page1) return;
 
   let lastY = window.scrollY || 0;
   let foldY = 0;
 
   const measure = () => {
-    const rect = page1.getBoundingClientRect();
-    const top = rect.top + window.scrollY;
-    foldY = top + rect.height * 0.62;
+    const r = page1.getBoundingClientRect();
+    foldY = r.top + window.scrollY + r.height * 0.62;
   };
 
   const apply = () => {
     const y = window.scrollY || 0;
-
     if (y < 8) {
       sticky.classList.remove("is-active");
       sticky.setAttribute("aria-hidden", "true");
-      lastY = y;
-      return;
+      lastY = y; return;
     }
-
     if (y <= foldY) {
       sticky.classList.remove("is-active");
       sticky.setAttribute("aria-hidden", "true");
     } else if (y > lastY) {
+      // scrolling down — show sticky
       sticky.classList.add("is-active");
       sticky.setAttribute("aria-hidden", "false");
     } else {
+      // scrolling up — hide
       sticky.classList.remove("is-active");
       sticky.setAttribute("aria-hidden", "true");
     }
-
     lastY = y;
   };
 
-  const onScroll = () => {
-    if (prefersReducedMotion()) {
-      measure();
-      const y = window.scrollY || 0;
-      sticky.classList.toggle("is-active", y > foldY);
-      sticky.setAttribute("aria-hidden", y > foldY ? "false" : "true");
-      return;
-    }
-    apply();
-  };
-
   measure();
-  onScroll();
-
+  apply();
   window.addEventListener("resize", debounce(measure, 150));
-  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("scroll", apply, { passive: true });
 }
 
-/* -----------------------------------------------------------------------------
-   Mobile navigation (main + sticky lists)
-   ----------------------------------------------------------------------------- */
-
+/* -------------------------------------------------------------------------
+   Mobile navigation
+   ------------------------------------------------------------------------- */
 function initMobileNav() {
-  const mainToggle = qs("#mainNavToggle");
+  const mainToggle   = qs("#mainNavToggle");
   const stickyToggle = qs("#stickyNavToggle");
-  const mainList = qs("#mainNavList");
-  const stickyList = qs("#stickyNavList");
-
-  const lists = [mainList, stickyList].filter(Boolean);
+  const mainList     = qs("#mainNavList");
+  const stickyList   = qs("#stickyNavList");
+  const lists        = [mainList, stickyList].filter(Boolean);
 
   const setOpen = (open) => {
-    lists.forEach((ul) => ul && ul.classList.toggle("is-open", open));
-    [mainToggle, stickyToggle].forEach((btn) => {
+    lists.forEach(ul => ul.classList.toggle("is-open", open));
+    [mainToggle, stickyToggle].forEach(btn => {
       if (!btn) return;
       btn.setAttribute("aria-expanded", open ? "true" : "false");
       btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
     });
   };
 
-  const wireToggle = (btn) => {
-    if (!btn) return;
-    btn.addEventListener("click", () => {
-      const open = !lists.some((ul) => ul.classList.contains("is-open"));
-      setOpen(open);
+  [mainToggle, stickyToggle].forEach(btn => {
+    btn?.addEventListener("click", () => {
+      setOpen(!lists.some(ul => ul.classList.contains("is-open")));
     });
-  };
-
-  wireToggle(mainToggle);
-  wireToggle(stickyToggle);
-
-  qsa('a[href^="#"]').forEach((a) => {
-    a.addEventListener("click", () => setOpen(false));
   });
 
-  window.addEventListener(
-    "resize",
-    debounce(() => {
-      if (window.innerWidth > 800) setOpen(false);
-    }, 150)
-  );
+  // Close on link click
+  qsa('a[href^="#"]').forEach(a => a.addEventListener("click", () => setOpen(false)));
+
+  // Close on resize to desktop
+  window.addEventListener("resize", debounce(() => {
+    if (window.innerWidth > 800) setOpen(false);
+  }, 150));
+
+  // Close on outside click
+  document.addEventListener("click", e => {
+    if (!e.target.closest(".site-header")) setOpen(false);
+  });
 }
 
-/* -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------
    Hero carousel + thumbnails
-   ----------------------------------------------------------------------------- */
-
+   ------------------------------------------------------------------------- */
 function initHeroCarousel() {
-  const track = qs("#heroTrack");
-  const prev = qs("#heroPrev");
-  const next = qs("#heroNext");
+  const track     = qs("#heroTrack");
+  const prev      = qs("#heroPrev");
+  const next      = qs("#heroNext");
   const thumbsRoot = qs("#heroThumbs");
   if (!track || !thumbsRoot) return;
 
-  const slides = qsa(".hero-gallery__slide", track);
-  let index = 0;
+  const slides    = qsa(".hero-gallery__slide", track);
+  let index       = 0;
   const THUMB_SLOTS = 6;
 
   const render = () => {
     track.style.transform = `translateX(${-index * 100}%)`;
-    qsa(".hero-thumb", thumbsRoot).forEach((t) => {
+    qsa(".hero-thumb", thumbsRoot).forEach(t => {
       const si = t.dataset.slideIndex;
-      if (si === undefined) {
-        t.setAttribute("aria-selected", "false");
-      } else {
-        t.setAttribute("aria-selected", Number(si) === index ? "true" : "false");
-      }
+      t.setAttribute("aria-selected",
+        si !== undefined && Number(si) === index ? "true" : "false"
+      );
     });
   };
 
-  const goTo = (i) => {
-    index = clamp(i, 0, slides.length - 1);
-    render();
-  };
+  const goTo = (i) => { index = clamp(i, 0, slides.length - 1); render(); };
 
-  slides.forEach((_, i) => {
+  // Build thumb buttons
+  slides.forEach((slide, i) => {
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "hero-thumb";
@@ -173,12 +143,13 @@ function initHeroCarousel() {
     btn.setAttribute("role", "tab");
     btn.setAttribute("aria-selected", i === 0 ? "true" : "false");
     btn.setAttribute("aria-label", `Show slide ${i + 1}`);
-    const img = slides[i].querySelector("img");
+    const img = slide.querySelector("img");
     if (img) btn.appendChild(img.cloneNode(true));
     btn.addEventListener("click", () => goTo(i));
     thumbsRoot.appendChild(btn);
   });
 
+  // Empty thumb placeholders (always 6 slots total)
   for (let i = slides.length; i < THUMB_SLOTS; i++) {
     const ph = document.createElement("span");
     ph.className = "hero-thumb hero-thumb--empty";
@@ -189,86 +160,78 @@ function initHeroCarousel() {
   prev?.addEventListener("click", () => goTo(index - 1));
   next?.addEventListener("click", () => goTo(index + 1));
 
+  // Swipe
+  let startX = 0;
+  track.addEventListener("touchstart", e => { startX = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener("touchend",   e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if (Math.abs(dx) > 40) goTo(dx < 0 ? index + 1 : index - 1);
+  });
+
   render();
 }
 
-/* -----------------------------------------------------------------------------
-   Horizontal scroll regions (applications + testimonials)
-   ----------------------------------------------------------------------------- */
-
+/* -------------------------------------------------------------------------
+   Horizontal scroll regions
+   ------------------------------------------------------------------------- */
 function initHScroll(root, prevBtn, nextBtn, amountRatio = 0.86) {
   if (!root) return;
-
   const step = () => Math.max(240, Math.floor(root.clientWidth * amountRatio));
-
-  prevBtn?.addEventListener("click", () => {
-    root.scrollBy({ left: -step(), behavior: prefersReducedMotion() ? "auto" : "smooth" });
-  });
-
-  nextBtn?.addEventListener("click", () => {
-    root.scrollBy({ left: step(), behavior: prefersReducedMotion() ? "auto" : "smooth" });
-  });
+  const beh  = () => prefersReducedMotion() ? "auto" : "smooth";
+  prevBtn?.addEventListener("click", () => root.scrollBy({ left: -step(), behavior: beh() }));
+  nextBtn?.addEventListener("click", () => root.scrollBy({ left:  step(), behavior: beh() }));
 }
 
-/* -----------------------------------------------------------------------------
-   Manufacturing tabs + mini carousel
-   ----------------------------------------------------------------------------- */
-
+/* -------------------------------------------------------------------------
+   Manufacturing process tabs
+   ------------------------------------------------------------------------- */
 const PROCESS_STEPS = [
   {
-    key: "raw",
-    label: "Raw Material",
+    key: "raw", label: "Raw Material",
     title: "High-Grade Raw Material Selection",
-    body: "Vacuum sizing tanks ensure precise outer diameter while internal pressure maintains perfect roundness and wall thickness uniformity.",
+    body:  "Vacuum sizing tanks ensure precise outer diameter while internal pressure maintains perfect roundness and wall thickness uniformity.",
     bullets: ["PE100 grade material", "Optimal molecular weight distribution"],
   },
   {
-    key: "extrusion",
-    label: "Extrusion",
+    key: "extrusion", label: "Extrusion",
     title: "Controlled Extrusion Parameters",
-    body: "Temperature, pressure, and screw speed are continuously monitored to maintain melt homogeneity and consistent output rates.",
+    body:  "Temperature, pressure, and screw speed are continuously monitored to maintain melt homogeneity and consistent output rates.",
     bullets: ["Closed-loop monitoring", "Automated profile adjustments"],
   },
   {
-    key: "cooling",
-    label: "Cooling",
+    key: "cooling", label: "Cooling",
     title: "Gradual Cooling for Dimensional Stability",
-    body: "Controlled cooling prevents warping and residual stresses while preserving long-term mechanical properties.",
+    body:  "Controlled cooling prevents warping and residual stresses while preserving long-term mechanical properties.",
     bullets: ["Calibrated spray zones", "Stable shrink compensation"],
   },
   {
-    key: "sizing",
-    label: "Sizing",
+    key: "sizing", label: "Sizing",
     title: "Precision Sizing & Calibration",
-    body: "Sizing tooling and vacuum calibration keep OD/ID within tight tolerances across long production runs.",
+    body:  "Sizing tooling and vacuum calibration keep OD/ID within tight tolerances across long production runs.",
     bullets: ["Laser OD checks", "Wall thickness sampling"],
   },
   {
-    key: "qc",
-    label: "Quality Control",
+    key: "qc", label: "Quality Control",
     title: "In-Line Quality Assurance",
-    body: "Batch traceability, mechanical tests, and visual inspection checkpoints ensure every coil meets specification.",
+    body:  "Batch traceability, mechanical tests, and visual inspection checkpoints ensure every coil meets specification.",
     bullets: ["Traceability IDs", "Destructive & non-destructive tests"],
   },
   {
-    key: "marking",
-    label: "Marking",
+    key: "marking", label: "Marking",
     title: "Durable Marking & Coding",
-    body: "Laser or inkjet marking applies standards-compliant identification for installation and audit trails.",
+    body:  "Laser or inkjet marking applies standards-compliant identification for installation and audit trails.",
     bullets: ["Standard-compliant text", "Batch and date codes"],
   },
   {
-    key: "cutting",
-    label: "Cutting",
+    key: "cutting", label: "Cutting",
     title: "Accurate Cutting to Length",
-    body: "Automated cutting stations deliver repeatable lengths for coils and straight sticks with clean edges.",
+    body:  "Automated cutting stations deliver repeatable lengths for coils and straight sticks with clean edges.",
     bullets: ["Servo-controlled cutters", "Length verification"],
   },
   {
-    key: "packaging",
-    label: "Packaging",
+    key: "packaging", label: "Packaging",
     title: "Protective Packaging for Transit",
-    body: "Finished goods are wrapped and palletized to prevent UV exposure and mechanical damage during logistics.",
+    body:  "Finished goods are wrapped and palletized to prevent UV exposure and mechanical damage during logistics.",
     bullets: ["UV protective wrap", "Export-ready pallets"],
   },
 ];
@@ -276,12 +239,14 @@ const PROCESS_STEPS = [
 function initProcess() {
   const tabsRoot = qs("#processTabs");
   const copyRoot = qs("#processCopy");
-  const track = qs("#processTrack");
-  const prev = qs("#processPrev");
-  const next = qs("#processNext");
+  const track    = qs("#processTrack");
+  const prev     = qs("#processPrev");
+  const next     = qs("#processNext");
   if (!tabsRoot || !copyRoot || !track) return;
 
-  let active = 0;
+  let active    = 0;
+  let slideIdx  = 0;
+  const slides  = qsa(".hero-gallery__slide", track);
 
   const renderCopy = () => {
     const step = PROCESS_STEPS[active];
@@ -289,15 +254,16 @@ function initProcess() {
 
     const h = document.createElement("h3");
     h.textContent = step.title;
+
     const p = document.createElement("p");
     p.textContent = step.body;
 
     const ul = document.createElement("ul");
     ul.className = "checklist";
-    step.bullets.forEach((txt) => {
-      const li = document.createElement("li");
+    step.bullets.forEach(txt => {
+      const li   = document.createElement("li");
       const icon = document.createElement("span");
-      icon.className = "check-ico";
+      icon.className  = "check-ico";
       icon.textContent = "✓";
       const span = document.createElement("span");
       span.textContent = txt;
@@ -329,9 +295,6 @@ function initProcess() {
     });
   };
 
-  const slides = qsa(".hero-gallery__slide", track);
-  let slideIdx = 0;
-
   const renderSlide = () => {
     track.style.transform = `translateX(${-slideIdx * 100}%)`;
   };
@@ -350,28 +313,22 @@ function initProcess() {
   renderSlide();
 }
 
-/* -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------
    FAQ accordion
-   ----------------------------------------------------------------------------- */
-
+   ------------------------------------------------------------------------- */
 function initFaq() {
   const root = qs("#faqAccordion");
   if (!root) return;
 
-  qsa(".accordion__item", root).forEach((item) => {
-    const btn = qs(".accordion__trigger", item);
+  qsa(".accordion__item", root).forEach(item => {
+    const btn   = qs(".accordion__trigger", item);
     const panel = qs(".accordion__panel", item);
     if (!btn || !panel) return;
 
-    const setOpen = (open) => {
-      item.classList.toggle("is-open", open);
-      btn.setAttribute("aria-expanded", open ? "true" : "false");
-      panel.hidden = !open;
-    };
-
     btn.addEventListener("click", () => {
       const willOpen = !item.classList.contains("is-open");
-      qsa(".accordion__item", root).forEach((it) => {
+      // Close all
+      qsa(".accordion__item", root).forEach(it => {
         const b = qs(".accordion__trigger", it);
         const p = qs(".accordion__panel", it);
         if (!b || !p) return;
@@ -384,15 +341,13 @@ function initFaq() {
   });
 }
 
-/* -----------------------------------------------------------------------------
-   Modals
-   ----------------------------------------------------------------------------- */
-
+/* -------------------------------------------------------------------------
+   Modals — with backdrop blur, Esc, focus trap
+   ------------------------------------------------------------------------- */
 function initModals() {
-  /** @type {HTMLElement | null} */
   let lastFocus = null;
 
-  const modalEmail = qs("#modalEmail");
+  const modalEmail    = qs("#modalEmail");
   const modalCallback = qs("#modalCallback");
 
   const openModal = (el) => {
@@ -400,28 +355,27 @@ function initModals() {
     lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     el.removeAttribute("hidden");
     document.body.style.overflow = "hidden";
-      document.body.classList.add("modal-open"); // ← add this line
+    document.body.classList.add("modal-open"); // triggers backdrop blur
 
-
-    const focusable = qsa('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el).filter(
-      (n) => !n.hasAttribute("disabled")
-    );
+    // Focus first focusable
+    const focusable = qsa(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])', el
+    ).filter(n => !n.hasAttribute("disabled"));
     (focusable[0] || el).focus?.();
   };
 
   const closeModal = (el) => {
     if (!el) return;
     el.setAttribute("hidden", "");
-      document.body.classList.remove("modal-open"); // ← add this line
-
     document.body.style.overflow = "";
-
-    if (lastFocus && typeof lastFocus.focus === "function") lastFocus.focus();
+    document.body.classList.remove("modal-open");
+    if (lastFocus?.focus) lastFocus.focus();
     lastFocus = null;
   };
 
-  document.addEventListener("click", (e) => {
-    const t = e.target;
+  // Close via data-close attribute
+  document.addEventListener("click", e => {
+    const t  = e.target;
     if (!(t instanceof HTMLElement)) return;
     const id = t.getAttribute("data-close");
     if (!id) return;
@@ -429,68 +383,51 @@ function initModals() {
     if (el) closeModal(el);
   });
 
-  document.addEventListener("keydown", (e) => {
+  // Close via Esc
+  document.addEventListener("keydown", e => {
     if (e.key !== "Escape") return;
-    if (modalEmail && !modalEmail.hasAttribute("hidden")) closeModal(modalEmail);
+    if (modalEmail    && !modalEmail.hasAttribute("hidden"))    closeModal(modalEmail);
     if (modalCallback && !modalCallback.hasAttribute("hidden")) closeModal(modalCallback);
   });
 
-  const wireOpeners = () => {
-    qs("#btnDatasheet")?.addEventListener("click", () => openModal(modalEmail));
-    qs("#btnHeroSpecs")?.addEventListener("click", () => openModal(modalEmail));
+  // Openers
+  qs("#btnDatasheet")?.addEventListener("click",     () => openModal(modalEmail));
+  qs("#btnHeroSpecs")?.addEventListener("click",     () => openModal(modalEmail));
+  qs("#btnHeroQuote")?.addEventListener("click",     () => openModal(modalCallback));
+  qs("#btnFeatureQuote")?.addEventListener("click",  () => openModal(modalCallback));
+  qs("#btnExpert")?.addEventListener("click",        () => openModal(modalCallback));
 
-    qs("#btnHeroQuote")?.addEventListener("click", () => openModal(modalCallback));
-    qs("#btnFeatureQuote")?.addEventListener("click", () => openModal(modalCallback));
-    qs("#btnExpert")?.addEventListener("click", () => openModal(modalCallback));
-  };
+  // Form submissions — close on submit
+  qs("#formEmailModal")?.addEventListener("submit",    e => { e.preventDefault(); closeModal(modalEmail); });
+  qs("#formCallbackModal")?.addEventListener("submit", e => { e.preventDefault(); closeModal(modalCallback); });
 
-  const wireForms = () => {
-    qs("#formEmailModal")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      closeModal(modalEmail);
-    });
-
-    qs("#formCallbackModal")?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      closeModal(modalCallback);
-    });
-  };
-
-  const wireEmailUi = () => {
-    const email = qs("#modalEmailField");
-    const btn = qs(".btn--brochure");
-    if (!(email instanceof HTMLInputElement) || !btn) return;
-
+  // Email modal: disable Brochure button until valid email
+  const emailField = qs("#modalEmailField");
+  const brochureBtn = qs(".btn--brochure");
+  if (emailField && brochureBtn) {
     const sync = () => {
-      const ok = email.value.trim().length > 3 && email.validity.valid;
-      btn.disabled = !ok;
-      btn.style.opacity = ok ? "1" : "0.65";
+      const ok = emailField.value.trim().length > 3 && emailField.validity.valid;
+      brochureBtn.disabled = !ok;
     };
-
-    email.addEventListener("input", sync);
+    emailField.addEventListener("input", sync);
     sync();
-  };
-
-  wireOpeners();
-  wireForms();
-  wireEmailUi();
+  }
 }
 
-/* -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------
    Forms (non-modal)
-   ----------------------------------------------------------------------------- */
-
+   ------------------------------------------------------------------------- */
 function initForms() {
-  qs("#catalogForm")?.addEventListener("submit", (e) => e.preventDefault());
-  qs("#catalogFormPage8")?.addEventListener("submit", (e) => e.preventDefault());
-  qs("#leadForm")?.addEventListener("submit", (e) => e.preventDefault());
-  qsa(".downloads-list__action").forEach((a) => a.addEventListener("click", (e) => e.preventDefault()));
+  qs("#catalogForm")?.addEventListener("submit", e => e.preventDefault());
+  qs("#leadForm")?.addEventListener("submit",    e => e.preventDefault());
+  qsa(".downloads-list__action").forEach(a =>
+    a.addEventListener("click", e => e.preventDefault())
+  );
 }
 
-/* -----------------------------------------------------------------------------
+/* -------------------------------------------------------------------------
    Boot
-   ----------------------------------------------------------------------------- */
-
+   ------------------------------------------------------------------------- */
 document.addEventListener("DOMContentLoaded", () => {
   initStickyHeader();
   initMobileNav();
